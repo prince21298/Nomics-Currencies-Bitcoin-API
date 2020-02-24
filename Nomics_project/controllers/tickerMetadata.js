@@ -12,6 +12,7 @@ module.exports=(ticker_m_data,axios,CircularJSON,knex)=>{
                 for (var [key,value] of Object.entries(parsedata.data[i])){
                     if (key=="id"){
                         var main_id=value
+                        other_data[key]=value
                     }else if(key=='1d'){
                         value['id']=main_id
                         knex('Ticker_1d').insert(value)
