@@ -59,15 +59,91 @@ module.exports=(ticker_m_data,axios,CircularJSON,knex)=>{
                         })
                 console.log(i+1,"data is coming...  ")
                 i = i + 1;
-                if(i==parsedata.data.length-1) {
+                if(i==parsedata.data.length) {
                     clearInterval(myfunc);
                 }
 
-            }, 1000/4);
+            },80);
             console.log('data inserted sucessfully');
         }).catch((err)=>{
             res.send(err)
             console.log(err);
+        })
+    })
+    ticker_m_data.get('/ticker_meta_get_data',(req,res)=>{
+        new_list = []
+        knex.select('*').table('ticker_meta_data')
+        .then((data)=>{
+            let index=0
+            var rec_f=setInterval(function(){   
+            var my_dict=Object.assign({},data[index])
+
+            knex.select("price_change","price_change_pct","volume","volume_change","volume_change_pct","market_cap_change","market_cap_change_pct")
+            .from("Ticker_1d").where("id",data[index].id)
+            .then((result_1d)=>{
+                my_dict["1d"]=Object.assign({},result_1d[0])                    
+            }).catch((reject_1d)=>{
+                console.log(reject_1d)
+            })
+
+            knex.select("price_change","price_change_pct","volume","volume_change","volume_change_pct","market_cap_change","market_cap_change_pct")
+            .from("Ticker_7d").where("id",data[index].id)
+            .then((result_1d)=>{
+                my_dict["7d"]=Object.assign({},result_1d[0])                    
+            }).catch((reject_1d)=>{
+                console.log(reject_1d)
+            })
+
+            knex.select("price_change","price_change_pct","volume","volume_change","volume_change_pct","market_cap_change","market_cap_change_pct")
+            .from("Ticker_30d").where("id",data[index].id)
+            .then((result_1d)=>{
+                my_dict["30d"]=Object.assign({},result_1d[0])                    
+            }).catch((reject_1d)=>{
+                console.log(reject_1d)
+            })
+
+            knex.select("price_change","price_change_pct","volume","volume_change","volume_change_pct","market_cap_change","market_cap_change_pct")
+            .from("Ticker_365d").where("id",data[index].id)
+            .then((result_1d)=>{
+                my_dict["365d"]=Object.assign({},result_1d[0])                    
+            }).catch((reject_1d)=>{
+                console.log(reject_1d)
+            })
+
+            knex.select("price_change","price_change_pct","volume","volume_change","volume_change_pct","market_cap_change","market_cap_change_pct")
+            .from("Ticker_ytd").where("id",data[index].id)
+            .then((result_1d)=>{
+                my_dict["ytd"]=Object.assign({},result_1d[0])                    
+            }).catch((reject_1d)=>{
+                console.log(reject_1d)
+            })
+
+
+            new_list.push(my_dict)
+            index+=1
+            if (index==data.length){
+                clearInterval(rec_f)
+            }
+            if(data.length==index){
+                res.send(new_list)
+                console.log(new_list);
+            }
+        },0)
+        }).catch((err)=>{
+            res.send(err.message)
+            console.log(err.message);
+        })
+    })
+
+
+
+    ticker_m_data.get('/ticker_meta_get_data_table',(req,res)=>{
+        knex.select('*').table('ticker_meta_data')
+        .then((data)=>{
+            res.send(data)
+        }).catch((err)=>{
+            res.send(err.message)
+            console.log(err.message);
         })
     })
 }
