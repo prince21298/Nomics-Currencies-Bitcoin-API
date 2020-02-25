@@ -134,16 +134,3 @@ module.exports=(ticker_m_data,axios,CircularJSON,knex)=>{
             console.log(err.message);
         })
     })
-
-
-
-    ticker_m_data.get('/ticker_meta_get_data_table',(req,res)=>{
-        knex.select('*').table('ticker_meta_data')
-        .then((data)=>{
-            res.send(data)
-        }).catch((err)=>{
-            res.send(err.message)
-            console.log(err.message);
-        })
-    })
-}
